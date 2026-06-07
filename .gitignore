@@ -1,0 +1,23 @@
+# Raw dataset — not needed for deployment
+agile sprints/
+delayed issues/
+storypoint/
+JIRA-Estimation-Prediction/agile sprints/
+JIRA-Estimation-Prediction/delayed issues/
+JIRA-Estimation-Prediction/storypoint/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Jupyter
+*.ipynb
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

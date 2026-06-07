@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SprintSense</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo">SPRINT<span>/</span><em>SENSE</em></div>
+  <div class="topbar-right">
+    <div class="api-status">
+      <div class="api-dot" id="apiDot"></div>
+      <span id="apiLabel">checking...</span>
+    </div>
+    <span id="modelLabel" style="display:none"></span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar">
+
+    <div class="section-label">Data Source</div>
+
+    <div class="upload-zone">
+      <input type="file" id="csvFile" accept=".csv" onchange="handleCSV(event)" />
+      <div class="upload-title">Upload Jira CSV export</div>
+      <div class="upload-sub">.csv · sprint ticket data</div>
+    </div>
+    <div class="upload-result" id="uploadResult"></div>
+
+    <!-- CSV Summary Card — shown after upload -->
+    <div id="csvSummaryCard" style="display:none;">
+      <div class="csv-summary">
+        <div class="csv-summary-row">
+          <div class="csv-stat">
+            <div class="csv-stat-val" id="csvTotal">—</div>
+            <div class="csv-stat-lbl">Total</div>
+          </div>
+          <div class="csv-stat">
+            <div class="csv-stat-val green" id="csvDone">—</div>
+            <div class="csv-stat-lbl">Done</div>
+          </div>
+          <div class="csv-stat">
+            <div class="csv-stat-val yellow" id="csvInprog">—</div>
+            <div class="csv-stat-lbl">In Prog</div>
+          </div>
+          <div class="csv-stat">
+            <div class="csv-stat-val red" id="csvTodo">—</div>
+            <div class="csv-stat-lbl">Todo</div>
+          </div>
+        </div>
+        <div class="csv-summary-row" style="margin-top:8px;">
+          <div class="csv-stat">
+            <div class="csv-stat-val" id="csvTeam">—</div>
+            <div class="csv-stat-lbl">Members</div>
+          </div>
+          <div class="csv-stat">
+            <div class="csv-stat-val" id="csvPoints">—</div>
+            <div class="csv-stat-lbl">Points</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-reset" onclick="resetToManual()">↩ Enter manually instead</button>
+    </div>
+
+    <!-- Manual entry fields -->
+    <div id="manualFields">
+
+      <div class="section-label">Sprint State</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Sprint Days</label>
+          <input type="number" id="planday" value="14" min="1" max="90" />
+        </div>
+        <div class="field">
+          <label>Current Day</label>
+          <input type="number" id="current_day" value="7" min="1" max="90" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Story Points</label>
+          <input type="number" id="vel_starttime" value="40" min="0" />
+        </div>
+        <div class="field">
+          <label>Tickets Planned</label>
+          <input type="number" id="no_issue_starttime" value="10" min="0" />
+        </div>
+      </div>
+
+      <div class="section-label">Ticket Breakdown</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Todo</label>
+          <input type="number" id="no_issuetodo" value="5" min="0" />
+        </div>
+        <div class="field">
+          <label>In Progress</label>
+          <input type="number" id="no_issueinprogress" value="3" min="0" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Done</label>
+          <input type="number" id="no_issuedone" value="2" min="0" />
+        </div>
+        <div class="field">
+          <label>Team Size</label>
+          <input type="number" id="no_teammember" value="4" min="1" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Added Mid-Sprint</label>
+          <input type="number" id="no_issue_added" value="0" min="0" />
+        </div>
+        <div class="field">
+          <label>Removed</label>
+          <input type="number" id="no_issue_removed" value="0" min="0" />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Always visible — sprint timing and history -->
+    <div class="section-label">Sprint Timing</div>
+
+    <div class="field-row" id="sprintTimingFields">
+      <div class="field">
+        <label>Sprint Days</label>
+        <input type="number" id="planday_csv" value="14" min="1" max="90" />
+      </div>
+      <div class="field">
+        <label>Current Day</label>
+        <input type="number" id="current_day_csv" value="7" min="1" max="90" />
+      </div>
+    </div>
+
+    <div class="section-label">Team History</div>
+
+    <div class="field">
+      <label>How often does team miss sprints?</label>
+      <div class="radio-row">
+        <div class="radio-opt">
+          <input type="radio" name="hist" id="h1" value="0.15" />
+          <label for="h1">Rarely</label>
+        </div>
+        <div class="radio-opt">
+          <input type="radio" name="hist" id="h2" value="0.5" checked />
+          <label for="h2">Sometimes</label>
+        </div>
+        <div class="radio-opt">
+          <input type="radio" name="hist" id="h3" value="0.78" />
+          <label for="h3">Often</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-bar" id="errorBar"></div>
+    <button class="btn-run" id="runBtn" onclick="runAnalysis()">RUN ANALYSIS</button>
+
+  </aside>
+
+  <main class="dashboard">
+
+    <div class="empty-state" id="emptyState">
+      <div class="big">—</div>
+      <div>No analysis running</div>
+      <div class="sub">Upload a CSV or enter sprint data, then click RUN ANALYSIS</div>
+    </div>
+
+    <div id="results" style="display:none; flex-direction:column; gap:14px;">
+
+      <!-- Row 1: Gauge + Model output -->
+      <div class="grid-2" style="grid-template-columns: 200px 1fr;">
+
+        <div class="panel gauge-panel">
+          <div class="panel-title" style="text-align:center; margin-bottom:12px;">OVERRUN RISK</div>
+          <div class="gauge-wrap">
+            <canvas id="gaugeCanvas" width="140" height="90"></canvas>
+            <div class="gauge-center">
+              <div class="gauge-pct" id="gaugePct">—</div>
+              <div class="gauge-label">PROBABILITY</div>
+            </div>
+          </div>
+          <div class="risk-badge" id="riskBadge">—</div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title" style="margin-bottom:0;">MODEL OUTPUT</div>
+            <div class="snap-pills">
+              <div class="snap-pill" data-s="0">SNAP 0</div>
+              <div class="snap-pill" data-s="30">SNAP 30</div>
+              <div class="snap-pill" data-s="50">SNAP 50</div>
+            </div>
+          </div>
+
+          <div class="metric-cell" style="margin-bottom:12px;">
+            <div class="metric-label">Snapshot Model Used</div>
+            <div id="mSnapshot" style="font-family:var(--mono);font-size:13px;color:var(--text);margin-top:4px;">—</div>
+            <div class="metric-sub">prediction time point · trained on 3,817 sprints</div>
+          </div>
+
+          <div class="metric-cell" style="background:var(--panel);">
+            <div class="metric-label" style="margin-bottom:6px;">Model Explanation</div>
+            <div id="mTopDriver" style="font-size:12px; color:var(--text-muted); line-height:1.5;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Row 2: SHAP + Insights -->
+      <div class="grid-2">
+
+        <div class="panel">
+          <div class="panel-title">RISK FACTOR BREAKDOWN · SHAP</div>
+          <div class="shap-legend">RED = INCREASING RISK &nbsp;·&nbsp; GREEN = REDUCING RISK</div>
+          <div id="shapRows"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">AUTOMATED INSIGHTS</div>
+          <div id="insightRows"></div>
+        </div>
+
+      </div>
+
+      <!-- Row 3: Feature impact chart -->
+      <div class="panel">
+        <div class="panel-title">FEATURE IMPACT · TOP 8 · SHAP VALUES</div>
+        <canvas id="shapChart" height="120"></canvas>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
