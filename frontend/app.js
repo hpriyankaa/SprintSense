@@ -1,5 +1,5 @@
 // ─── Config ───────────────────────────────────────────────
-const API = 'http://localhost:8000';
+const API = 'https://sprintsense-api.delightfuldune-2503ad25.eastus.azurecontainerapps.io';
 
 const FEATURE_NAMES = {
   todo_ratio:              'Todo Ratio',
